@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <style>
+        *,div {
+            font-family: 'Nunito', sans-serif;
+        }
+        body {
+            background-color: #313133;
+        }
+        #wrapper {
+            background-color: white;
+            width: 500px;
+            padding: 10px;
+        }
+        #add {
+            margin: 10px auto;
+            padding: 0;
+        }
+        .required {
+            height: 100%;
+            width: 80%;
+            background-color: #DEDEDE;
+            margin-bottom: 5px;
+            font-size: 15px;
+            padding: 5px;
+            position: relative;
+            display:flex;
+        }
+        .required:hover {
+            background-color: #cbcbcc;
+        }
+        .completed {
+            width: 80%;
+            background-color: #A7D6B4;
+            text-decoration: line-through;
+            padding: 5px;
+            font-size: 15px;
+            position: relative;
+            margin-bottom: 5px;
+        }
+        .completed:hover {
+            background-color: #80D999;
+        }
+        .removeBtn {
+            height: 100%;
+            width: 30px;
+            border: none;
+            background-color: #F27777;
+            color: white;
+            right: -30px;
+            top: 0;
+            position: absolute;
+        }
+        #addBtn {
+            background-color: #52addb;
+            color: white;
+            border: none; 
+            height: 100%;
+        }
+        #incomplete {
+            color: rgb(167, 166, 166);
+        }
+        .list-enter-active {
+            transition: all 0.4s;
+        }
+        .list-leave-active {
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .list-enter {
+            transition: all 0.5s;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <h1>Tasks <small id="incomplete">({{incomplete}})</small></h1>
+        <input id="add" v-model="value" type="text" placeholder="New Task">
+            <button id="addBtn" @click="addTask">+ Add</button>
+        </input>
+        <transition-group name="list">
+        <div v-for="(tasks,index) in list" @click="toggleCompletion(tasks)" @remove="removeTask(index)" :class="tasks.state" :key="tasks">
+            {{tasks.task}}
+            <button class="removeBtn" @click="removeTask(tasks,index)">X</button>
+        </div>
+        </transition-group>
+    </div>
+    <script>
+        let app = new Vue({
+            el: "#wrapper",
+            data: {
+                value: "",
+                list: [],
+                incomplete: 0
+            },
+            methods: {
+                addTask() {
+                    if(this.value.length == 0) return;
+                    this.list.push({
+                        task: this.value,
+                        state: "required"
+                    });
+                    this.value = '';
+                    this.incomplete++;
+                },
+                toggleCompletion(tasks) {
+                    if(tasks.state == "required") {
+                        tasks.state = "completed";
+                        this.incomplete--;
+                    } else {
+                        tasks.state = "required";
+                        this.incomplete++;
+                    }
+                },
+                removeTask(tasks,index) {
+                    if(tasks.state == "completed") this.incomplete--;
+                    this.list.splice(index,1);
+                    
+                }
+            }
+        })
+    </script>
+    
+</body>
+</html>
